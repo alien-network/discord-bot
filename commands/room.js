@@ -21,7 +21,7 @@ module.exports = {
         let room = await msg.guild.channels.create(msg.author.username + '\'s room', {
           type: 'voice', bitrate: 96000, parent: rooms, permissionOverwrites: [
             {
-              id: '698545799839219822', // @everyone
+              id: msg.guild.roles.everyone.id, 
               deny: ['CONNECT']
             }
           ]

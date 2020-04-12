@@ -14,7 +14,7 @@ for (const file of commandFiles) {
 }
 
 // Connect to redis
-const keyv = new Keyv('redis://192.168.0.100:6379', { namespace: 'alien-network' });
+const keyv = new Keyv('redis://an-bot-db:6379', { namespace: 'alien-network' });
 keyv.on('error', e => console.error('Keyv connection error:', e));
 
 client.once('ready', () => {

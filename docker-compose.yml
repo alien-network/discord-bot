@@ -1,0 +1,18 @@
+version: '3'
+
+services:
+  an-bot-db: 
+    image: redis:alpine
+    container_name: an-bot-db
+    restart: unless-stopped
+    volumes:
+      - db-data:/data
+
+  an-bot:
+    build: .
+    image: alien-network/discord-bot:latest
+    container_name: an-bot
+    env_file: .env
+
+volumes:
+  db-data:

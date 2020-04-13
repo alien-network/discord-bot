@@ -1,7 +1,7 @@
 module.exports = {
   name: 'room',
   description: 'Your own private voice channel in the server. Invite your friends and have a private conversation, of course you can also kick them 😉',
-  usage: '- `/room create` Create your room \n- `/room delete` Delete your room \n- `/room invite @user` Invite @user to your room \n- `/room kick @user` Kick @user from your room \n- `/room rename lounge` Rename your room to "lounge" \n- `/room invisible true` Make your room invisible to other users',
+  usage: '- `/room create` Create your room \n- `/room delete` Delete your room \n- `/room invite @user` Invite @user to your room \n- `/room kick @user` Kick @user from your room \n- `/room rename name` Rename your room to "name" \n- `/room invisible [true/false]` Make your room invisible/visible for other users',
   async execute(msg, args, keyv) {
     let subcommand = args[0];
     if (args.length === 0) {

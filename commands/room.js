@@ -1,6 +1,7 @@
 module.exports = {
   name: 'room',
-  description: 'Create and manage your private room',
+  description: 'Your own private voice channel in the server. Invite your friends and have a private conversation, of course you can also kick them 😉',
+  usage: '- `/room create` Create your room \n- `/room delete` Delete your room \n- `/room invite @user` Invite @user to your room \n- `/room kick @user` Kick @user from your room \n- `/room rename lounge` Rename your room to "lounge" \n- `/room invisible true` Make your room invisible to other users',
   async execute(msg, args, keyv) {
     let subcommand = args[0];
     if (args.length === 0) {
@@ -11,7 +12,7 @@ module.exports = {
       if (rooms_id) {
         rooms = await msg.client.channels.fetch(rooms_id);
       } else {
-        rooms = await msg.guild.channels.create('rooms', { type: 'category' });
+        rooms = await msg.guild.channels.create('🔒 Rooms', { type: 'category' });
         keyv.set('rooms_category_id', rooms.id);
       }
       let room_id = await keyv.get('room-' + msg.author.id);
@@ -35,9 +36,9 @@ module.exports = {
         let room = await msg.client.channels.fetch(room_id);
         room.delete();
         keyv.delete('room-' + msg.author.id);
-        msg.reply('your room has been deleted');
+        msg.reply('Your room has been deleted');
       } else {
-        msg.reply('you don\'t have a room');
+        msg.reply('You don\'t have a room');
       }
     } else if (subcommand === "rename") {
       let room_id = await keyv.get('room-' + msg.author.id);
@@ -45,7 +46,7 @@ module.exports = {
         let room = await msg.client.channels.fetch(room_id);
         room.setName(args.slice(1).join(' '));
       } else {
-        msg.reply('you don\'t have a room');
+        msg.reply('You don\'t have a room');
       }
     } else if (subcommand === 'invite') {
       let room_id = await keyv.get('room-' + msg.author.id);
@@ -59,12 +60,12 @@ module.exports = {
           user.send('You now have access to <@' + msg.author.id + '>\'s room');
           msg.reply(user.username + ' now has access to join your room');
         } else {
-          msg.reply('not a valid user');
+          msg.reply('Not a valid user');
         }
       } else {
-        msg.reply('you don\'t have a room');
+        msg.reply('You don\'t have a room');
       }
-    } else if (subcommand === "kick") {
+    } else if (subcommand === '') {
       let room_id = await keyv.get('room-' + msg.author.id);
       if (room_id) {
         let room = await msg.client.channels.fetch(room_id);
@@ -76,13 +77,33 @@ module.exports = {
           user.send('You have been kicked from <@' + msg.author.id + '>\'s room');
           msg.reply(user.username + ' has been kicked from your room');
         } else {
-          msg.reply('not a valid user');
+          msg.reply('Not a valid user');
         }
       } else {
-        msg.reply('you don\'t have a room');
+        msg.reply('You don\'t have a room');
+      }
+    } else if (subcommand === 'invisible') {
+      let room_id = await keyv.get('room-' + msg.author.id);
+      if (room_id) {
+        let room = await msg.client.channels.fetch(room_id);
+        if (args[1] === 'true') {
+          room.updateOverwrite(msg.guild.roles.everyone.id, {
+            VIEW_CHANNEL: false
+          });
+          msg.reply('Your room is now invisible');
+        } else if (args[1] === 'false') {
+          room.updateOverwrite(msg.guild.roles.everyone.id, {
+            VIEW_CHANNEL: null
+          });
+          msg.reply('Your room is now visible');
+        } else {
+          msg.reply('Invalid option please use true or false');
+        }
+      } else {
+        msg.reply('You don\'t have a room');
       }
     } else {
-      msg.reply('unknown command arguments');
+      msg.reply('Unknown command arguments');
     }
   }
 }

@@ -1,6 +1,7 @@
 const Discord = require('discord.js');
 const fs = require('fs');
 const Keyv = require('keyv');
+const { bot_channel_id } = require('./config.json');
 
 // Initialize Discord client
 const client = new Discord.Client();
@@ -14,7 +15,7 @@ for (const file of commandFiles) {
 }
 
 // Connect to redis
-const keyv = new Keyv('redis://an-bot-db:6379', { namespace: 'alien-network' });
+const keyv = new Keyv('redis://192.168.0.100:6379', { namespace: 'alien-network' });
 keyv.on('error', e => console.error('Keyv connection error:', e));
 
 client.once('ready', () => {
@@ -24,11 +25,26 @@ client.once('ready', () => {
 
 // Capture client messages
 client.on('message', async msg => {
+  // Check if command and not from a bot
   if (!msg.content.startsWith('/') || msg.author.bot) return;
+
+  // Check if user is using the bot channel
+  if (msg.channel instanceof Discord.GuildChannel && msg.channel.id !== '699259492755439773') {
+    msg.author.send('Please use the <#' + bot_channel_id + '> channel for bot commands');
+    msg.delete();
+    return;
+  }
+
   console.log(`${msg.author.username}: ${msg.content}`);
   const args = msg.content.slice('/'.length).split(/ +/);
   const command = args.shift().toLowerCase();
-  if (command === 'room') {
+
+  // Check what command is used
+  if (command === 'help') {
+    client.commands.get('help').execute(msg, args, client.commands);
+  } else if (command === 'announce') {
+    client.commands.get('announce').execute(msg, args, client.commands);
+  } else if (command === 'room') {
     client.commands.get('room').execute(msg, args, keyv);
   } else {
     msg.reply('unkown command');

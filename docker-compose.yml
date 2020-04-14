@@ -13,6 +13,8 @@ services:
     image: alien-network/discord-bot:latest
     container_name: an-bot
     env_file: .env
+    volumes:
+      - ./config.json:/home/node/app/config.json:ro
 
 volumes:
   db-data:

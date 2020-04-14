@@ -29,7 +29,7 @@ client.on('message', async msg => {
   if (!msg.content.startsWith('/') || msg.author.bot) return;
 
   // Check if user is using the bot channel
-  if (msg.channel instanceof Discord.GuildChannel && msg.channel.id !== '699259492755439773') {
+  if (msg.channel instanceof Discord.GuildChannel && msg.channel.id !== bot_channel_id) {
     msg.author.send('Please use the <#' + bot_channel_id + '> channel for bot commands');
     msg.delete();
     return;

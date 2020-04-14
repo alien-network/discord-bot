@@ -24,6 +24,9 @@ module.exports = {
             {
               id: msg.guild.roles.everyone.id, 
               deny: ['CONNECT']
+            }, {
+              id: msg.author.id,
+              allow: ['VIEW_CHANNEL', 'CONNECT']
             }
           ]
         });
@@ -55,6 +58,7 @@ module.exports = {
         let user = getUserFromMention(msg, args[1]);
         if (user) {
           room.createOverwrite(user, {
+            VIEW_CHANNEL: true,
             CONNECT: true
           });
           user.send('You now have access to <@' + msg.author.id + '>\'s room');
@@ -65,7 +69,7 @@ module.exports = {
       } else {
         msg.reply('You don\'t have a room');
       }
-    } else if (subcommand === '') {
+    } else if (subcommand === 'kick') {
       let room_id = await keyv.get('room-' + msg.author.id);
       if (room_id) {
         let room = await msg.client.channels.fetch(room_id);

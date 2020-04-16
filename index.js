@@ -1,7 +1,7 @@
 const Discord = require('discord.js');
 const fs = require('fs');
 const Keyv = require('keyv');
-const { bot_channel_id } = require('./config.json');
+const { bot_channel_id, redis } = require('./config.json');
 
 // Initialize Discord client
 const client = new Discord.Client();
@@ -15,7 +15,7 @@ for (const file of commandFiles) {
 }
 
 // Connect to redis
-const keyv = new Keyv('redis://an-bot-db:6379', { namespace: 'alien-network' });
+const keyv = new Keyv('redis://' + redis.host + ':' + redis.port, { namespace: 'alien-network' });
 keyv.on('error', e => console.error('Keyv connection error:', e));
 
 client.once('ready', () => {

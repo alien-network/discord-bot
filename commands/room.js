@@ -41,6 +41,10 @@ module.exports = {
       if (subcommand === 'invite') {
         let user = getUserFromMention(msg, args[1]);
         if (user) {
+          if (user === msg.author) {
+            msg.reply('Why would you invite yourself to your own room 🤔');
+            return;
+          }
           room.createOverwrite(user, {
             VIEW_CHANNEL: true,
             CONNECT: true
@@ -56,6 +60,10 @@ module.exports = {
       if (subcommand === 'kick') {
         let user = getUserFromMention(msg, args[1]);
         if (user) {
+          if (user === msg.author) {
+            msg.reply('Nice try 😉');
+            return;
+          }
           room.permissionOverwrites.get(user.id).delete();
           msg.guild.member(user).voice.kick();
           user.send('You have been kicked from <@' + msg.author.id + '>\'s room');

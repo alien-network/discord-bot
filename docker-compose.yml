@@ -2,7 +2,7 @@ version: '3'
 
 services:
   an-bot-db: 
-    image: redis:alpine
+    image: redis:6-alpine
     container_name: an-bot-db
     restart: unless-stopped
     volumes:

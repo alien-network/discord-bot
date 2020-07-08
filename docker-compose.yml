@@ -16,6 +16,8 @@ services:
     env_file: .env
     volumes:
       - ./config.json:/home/node/app/config.json:ro
+    depends_on:
+      - an-bot-db
 
 volumes:
   db-data:

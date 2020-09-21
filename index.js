@@ -19,7 +19,7 @@ const keyv = new Keyv('redis://' + redis.host + ':' + redis.port, { namespace: '
 keyv.on('error', e => console.error('Keyv connection error:', e));
 
 client.once('ready', () => {
-  console.log('Ready!');
+  console.info('Connected to Discord API');
   client.user.setActivity('everybody 😶', { type: 'WATCHING' });
 })
 
@@ -59,5 +59,5 @@ DISCORD_TOKEN = process.env.DISCORD_TOKEN
 if (DISCORD_TOKEN) {
   client.login();
 } else {
-  console.log('Please set the DISCORD_TOKEN environment variable');
+  console.error('Please set the DISCORD_TOKEN environment variable');
 }

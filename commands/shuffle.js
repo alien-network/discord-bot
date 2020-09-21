@@ -17,7 +17,12 @@ module.exports = {
       return;
     }
 
-    const n_teams = args[0];
+    const n_teams = Number(args[0]);
+
+    if (isNaN(n_teams)) {
+      msg.reply('n_teams must be a number');
+      return;
+    }
 
     // Maximum 10 teams
     if (n_teams > 10) {

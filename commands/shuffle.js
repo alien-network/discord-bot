@@ -2,8 +2,8 @@ const { shuffle_category_id, shuffle_lobby_id } = require('../config.json');
 
 module.exports = {
   name: 'shuffle',
-  description: 'Shuffle users to different voice channels.',
-  usage: '- `/shuffle <n_teams>` Shuffle all connected users in the shuffle lobby to n different voice channels',
+  description: 'Shuffle users to different voice channels. Useful for playing against eachother in random teams',
+  usage: '- `/shuffle <n_teams>` Shuffle all connected users in <#' + shuffle_lobby_id + '> to n different voice channels',
   async execute(msg, args, commands) {
     // Check if user is in the lobby
     if (msg.member.voice.channelID != shuffle_lobby_id) {

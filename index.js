@@ -47,7 +47,7 @@ client.on('message', async msg => {
   } else if (command === 'room') {
     client.commands.get('room').execute(msg, args, keyv);
   } else if (command === 'shuffle') {
-    client.commands.get('shuffle').execute(msg, args, keyv);
+    client.commands.get('shuffle').execute(msg, args);
   } else {
     msg.reply('unkown command');
   }

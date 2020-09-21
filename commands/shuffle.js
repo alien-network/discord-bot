@@ -4,7 +4,7 @@ module.exports = {
   name: 'shuffle',
   description: 'Shuffle users to different voice channels. Useful for playing against eachother in random teams',
   usage: '- `/shuffle <n_teams>` Shuffle all connected users in <#' + shuffle_lobby_id + '> to n different voice channels',
-  async execute(msg, args, commands) {
+  async execute(msg, args) {
     // Check if user is in the lobby
     if (msg.member.voice.channelID != shuffle_lobby_id) {
       msg.reply('You must be in the lobby to shuffle');

@@ -6,6 +6,23 @@ const { bot_channel_id, redis } = require('./config.json');
 // Initialize Discord client
 const client = new Discord.Client();
 
+// Shutdown function for clean shutdown
+let shutdown = () => {
+  console.info('Shutting down...');
+  client.destroy();
+  process.exit();
+}
+
+// Receive SIGINT
+process.once('SIGINT', () => {
+  shutdown();
+})
+
+// Receive SIGTERM
+process.once('SIGTERM', () => {
+  shutdown();
+})
+
 // Get all commands from folder
 client.commands = new Discord.Collection();
 const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
@@ -60,4 +77,5 @@ if (DISCORD_TOKEN) {
   client.login();
 } else {
   console.error('Please set the DISCORD_TOKEN environment variable');
+  shutdown();
 }

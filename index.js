@@ -3,6 +3,8 @@ const fs = require('fs');
 const Keyv = require('keyv');
 const { bot_channel_id, redis } = require('./config.json');
 
+console.info(`discord.js version: ${Discord.version}`)
+
 // Initialize Discord client
 const client = new Discord.Client();
 

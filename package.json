@@ -4,7 +4,7 @@
   "description": "Alien Network Discord Bot",
   "main": "index.js",
   "repository": "https://github.com/alien-network/discord-bot.git",
-  "author": "DemeulemeesterJarne <jarne.demeulemeester@student.howest.be>",
+  "author": "jarnedemeulemeester <jarne.demeulemeester@student.howest.be>",
   "license": "GPL-3.0",
   "dependencies": {
     "@keyv/redis": "^2.1.2",

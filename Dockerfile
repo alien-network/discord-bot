@@ -1,8 +1,8 @@
 FROM node:15.3-alpine
 
-COPY . /home/node/app
-
 WORKDIR /home/node/app
+
+COPY . .
 
 RUN yarn install --production
 

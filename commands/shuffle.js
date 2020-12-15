@@ -1,12 +1,12 @@
-const { shuffle_category_id, shuffle_lobby_id } = require('../config.json');
+import config from '../config.js';
 
-module.exports = {
+export default {
   name: 'shuffle',
   description: 'Shuffle users to different voice channels. Useful for playing against eachother in random teams',
-  usage: '- `/shuffle <n_teams>` Shuffle all connected users in <#' + shuffle_lobby_id + '> to n different voice channels',
+  usage: '- `/shuffle <n_teams>` Shuffle all connected users in <#' + config.shuffle_lobby_id + '> to n different voice channels',
   async execute(msg, args) {
     // Check if user is in the lobby
-    if (msg.member.voice.channelID != shuffle_lobby_id) {
+    if (msg.member.voice.channelID != config.shuffle_lobby_id) {
       msg.reply('You must be in the lobby to shuffle');
       return;
     }
@@ -30,13 +30,13 @@ module.exports = {
       return;
     }
 
-    const shuffle_category = await msg.client.channels.fetch(shuffle_category_id);
+    const shuffle_category = await msg.client.channels.fetch(config.shuffle_category_id);
     
     msg.reply(`Shuffling into ${n_teams} teams`);
 
     // Delete all shuffle chennels except the lobby
     shuffle_category.children.forEach(channel => {
-      if (channel.id == shuffle_lobby_id) return;
+      if (channel.id == config.shuffle_lobby_id) return;
       channel.delete();
     })
 
@@ -51,7 +51,7 @@ module.exports = {
     }
 
     // Split and shuffle members
-    const shuffle_lobby = await msg.client.channels.fetch(shuffle_lobby_id);
+    const shuffle_lobby = await msg.client.channels.fetch(config.shuffle_lobby_id);
     let split_lobby_members = Array.from(shuffle_lobby.members.values());
     let shuffle_lobby_members = shuffle_array(split_lobby_members);
     let shuffled_members = [];

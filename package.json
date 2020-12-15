@@ -1,11 +1,12 @@
 {
   "name": "alien-network-bot",
-  "version": "1.0.0",
+  "version": "0.2.0",
   "description": "Alien Network Discord Bot",
   "main": "index.js",
   "repository": "https://github.com/alien-network/discord-bot.git",
   "author": "jarnedemeulemeester <jarne.demeulemeester@student.howest.be>",
   "license": "GPL-3.0",
+  "type": "module",
   "dependencies": {
     "@keyv/redis": "^2.1.2",
     "discord.js": "^12.5.1",

@@ -1,6 +1,6 @@
-const { MessageEmbed } = require('discord.js');
+import { MessageEmbed } from 'discord.js';
 
-module.exports = {
+export default {
   name: 'help',
   description: 'Get more info about other commands',
   usage: '- `/help <command>` Get more info about a specific command',
@@ -17,7 +17,7 @@ module.exports = {
         .addField('Commands: ', commands_text);
       msg.reply(embed);
     } else {
-      command = commands.get(args[0]);
+      const command = commands.get(args[0]);
       if (!command) {
         msg.reply('Unknown command');
         return;

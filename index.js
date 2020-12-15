@@ -1,7 +1,7 @@
-const Discord = require('discord.js');
-const fs = require('fs');
-const Keyv = require('keyv');
-const { bot_channel_id, redis } = require('./config.json');
+import Discord from 'discord.js';
+import Keyv from 'keyv';
+import config from './config.js';
+import * as commands from './commands/index.js';
 
 console.info(`discord.js version: ${Discord.version}`)
 
@@ -27,14 +27,12 @@ process.once('SIGTERM', () => {
 
 // Get all commands from folder
 client.commands = new Discord.Collection();
-const commandFiles = fs.readdirSync('./commands').filter(file => file.endsWith('.js'));
-for (const file of commandFiles) {
-  const command = require(`./commands/${file}`);
-  client.commands.set(command.name, command);
+for (const command in commands) {
+  client.commands.set(commands[command].name, commands[command]);
 }
 
 // Connect to redis
-const keyv = new Keyv('redis://' + redis.host + ':' + redis.port, { namespace: 'alien-network' });
+const keyv = new Keyv('redis://' + config.redis.host + ':' + config.redis.port, { namespace: 'alien-network' });
 keyv.on('error', e => console.error('Keyv connection error:', e));
 
 client.once('ready', () => {
@@ -48,8 +46,8 @@ client.on('message', async msg => {
   if (!msg.content.startsWith('/') || msg.author.bot) return;
 
   // Check if user is using the bot channel
-  if (msg.channel instanceof Discord.GuildChannel && msg.channel.id !== bot_channel_id) {
-    msg.author.send('Please use the <#' + bot_channel_id + '> channel for bot commands');
+  if (msg.channel instanceof Discord.GuildChannel && msg.channel.id !== config.bot_channel_id) {
+    msg.author.send('Please use the <#' + config.bot_channel_id + '> channel for bot commands');
     msg.delete();
     return;
   }
@@ -73,7 +71,7 @@ client.on('message', async msg => {
 })
 
 // Get discord token from environment variable
-DISCORD_TOKEN = process.env.DISCORD_TOKEN
+const DISCORD_TOKEN = process.env.DISCORD_TOKEN
 
 if (DISCORD_TOKEN) {
   client.login();

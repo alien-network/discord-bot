@@ -1,14 +1,14 @@
-const { MessageEmbed } = require('discord.js');
-const { admin_user_id, announcements_channel_id } = require('../config.json');
+import { MessageEmbed } from 'discord.js';
+import config from '../config.js';
 
-module.exports = {
+export default {
   name: 'announce',
   description: 'Write a announcement',
-  usage: '- `/announce message <message>` Place an announcement in the <#' + announcements_channel_id + '> channel \n- `/announce command <command>` Announce a new command \n- `/announce edit <message_id> [message/command] <message/command>` Edit an announcement',
+  usage: '- `/announce message <message>` Place an announcement in the <#' + config.announcements_channel_id + '> channel \n- `/announce command <command>` Announce a new command \n- `/announce edit <message_id> [message/command] <message/command>` Edit an announcement',
   subcommands: ['message', 'command', 'edit'],
   async execute(msg, args, commands) {
     // Check if user is admin
-    if (msg.author.id !== admin_user_id) return;
+    if (msg.author.id !== config.admin_user_id) return;
 
     // No arguments
     if (args.length === 0) return;
@@ -20,7 +20,7 @@ module.exports = {
       return;
     };
 
-    let announcements_channel = await msg.client.channels.fetch(announcements_channel_id);
+    let announcements_channel = await msg.client.channels.fetch(config.announcements_channel_id);
     if (args[0] === 'message') {
       announcements_channel.send(args.slice(1).join(' '));
     } else if (args[0] === 'command') {

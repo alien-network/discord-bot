@@ -1,4 +1,4 @@
-module.exports = {
+export default {
   name: 'room',
   description: 'Your own private voice channel in the server. Invite your friends and have a private conversation, of course you can also kick them 😉',
   usage: '- `/room create` Create your room \n- `/room delete` Delete your room \n- `/room invite <@user>` Invite @user to your room \n- `/room kick <@user>` Kick @user from your room \n- `/room rename <name>` Rename your room \n- `/room invisible [true/false]` Make your room invisible/visible for other users',

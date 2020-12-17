@@ -6,6 +6,7 @@
         "import/extensions": "off",
         "node/no-unpublished-import": "off",
         "no-console": "off",
-        "no-process-exit": "off"
+        "no-process-exit": "off",
+        "no-plusplus": "off"
     }
 }

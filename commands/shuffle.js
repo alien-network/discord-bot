@@ -2,12 +2,21 @@ import config from '../config.js';
 import Command from '../models/command.js';
 
 const name = 'shuffle';
-const description = 'Shuffle users to different voice channels. Useful for playing against eachother in random teams';
-const usage = '- `/shuffle <n_teams>` Shuffle all connected users in <#' + config.shuffle_lobby_id + '> to n different voice channels';
+const description =
+  'Shuffle users to different voice channels. Useful for playing against eachother in random teams';
+const usage = `- \`/shuffle <n_teams>\` Shuffle all connected users in <#${config.shuffleLobbyId}> to n different voice channels`;
+
+const shuffleArray = (a) => {
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [a[i], a[j]] = [a[j], a[i]];
+  }
+  return a;
+};
 
 const execute = async (msg, args) => {
   // Check if user is in the lobby
-  if (msg.member.voice.channelID != config.shuffle_lobby_id) {
+  if (msg.member.voice.channelID !== config.shuffleLobbyId) {
     msg.reply('You must be in the lobby to shuffle');
     return;
   }
@@ -18,65 +27,64 @@ const execute = async (msg, args) => {
     return;
   }
 
-  const n_teams = Number(args[0]);
+  const nTeams = Number(args[0]);
 
-  if (isNaN(n_teams)) {
+  if (Number.isNaN(nTeams)) {
     msg.reply('n_teams must be a number');
     return;
   }
 
   // Maximum 10 teams
-  if (n_teams > 10) {
+  if (nTeams > 10) {
     msg.reply('Sorry a maximum of 10 teams is allowed');
     return;
   }
 
-  const shuffle_category = await msg.client.channels.fetch(config.shuffle_category_id);
-  
-  msg.reply(`Shuffling into ${n_teams} teams`);
+  const shuffleCategory = await msg.client.channels.fetch(
+    config.shuffleCategoryId
+  );
+
+  msg.reply(`Shuffling into ${nTeams} teams`);
 
   // Delete all shuffle chennels except the lobby
-  shuffle_category.children.forEach(channel => {
-    if (channel.id == config.shuffle_lobby_id) return;
+  shuffleCategory.children.forEach((channel) => {
+    if (channel.id === config.shuffleLobbyId) return;
     channel.delete();
-  })
+  });
 
-  let team_channels = Array();
+  const teamChannelsPromise = [];
 
   // Create team voice channels
-  for (let i = 0; i < n_teams; i++) {
-    let team_channel = await msg.guild.channels.create(`team ${i+1}`, {
-      type: 'voice', bitrate: 96000, parent: shuffle_category
+  for (let i = 0; i < nTeams; i++) {
+    const teamChannel = msg.guild.channels.create(`team ${i + 1}`, {
+      type: 'voice',
+      bitrate: 96000,
+      parent: shuffleCategory,
     });
-    team_channels.push(team_channel);
+    teamChannelsPromise.push(teamChannel);
   }
+  const teamChannels = await Promise.all(teamChannelsPromise);
 
   // Split and shuffle members
-  const shuffle_lobby = await msg.client.channels.fetch(config.shuffle_lobby_id);
-  let split_lobby_members = Array.from(shuffle_lobby.members.values());
-  let shuffle_lobby_members = shuffle_array(split_lobby_members);
-  let shuffled_members = [];
-  for (let i = n_teams; i > 0; i--) {
-    shuffled_members.push(shuffle_lobby_members.splice(0, Math.ceil(shuffle_lobby_members.length / i)));
+  const shuffleLobby = await msg.client.channels.fetch(config.shuffleLobbyId);
+  const splitLobbyMembers = Array.from(shuffleLobby.members.values());
+  const shuffleLobbyMembers = shuffleArray(splitLobbyMembers);
+  const shuffledMembers = [];
+  for (let i = nTeams; i > 0; i -= 1) {
+    shuffledMembers.push(
+      shuffleLobbyMembers.splice(0, Math.ceil(shuffleLobbyMembers.length / i))
+    );
   }
-  
+
   // Move members to voice channels
-  for (let i = 0; i < team_channels.length; i++) {
-    shuffled_members[i].forEach(shuffled_member => {
-      shuffled_member.voice.setChannel(team_channels[i]);
-    })
+  for (let i = 0; i < teamChannels.length; i++) {
+    shuffledMembers[i].forEach((shuffledMember) => {
+      shuffledMember.voice.setChannel(teamChannels[i]);
+    });
   }
-}
+};
 
-function shuffle_array(a) {
-  for (let i = a.length - 1; i > 0; i--) {
-      const j = Math.floor(Math.random() * (i + 1));
-      [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-let shuffleCommand = new Command(name, description, usage);
+const shuffleCommand = new Command(name, description, usage);
 shuffleCommand.execute = execute;
 
 export default shuffleCommand;

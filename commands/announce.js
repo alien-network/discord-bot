@@ -4,7 +4,7 @@ import Command from '../models/command.js';
 
 const name = 'announce';
 const description = 'Write a announcement';
-const usage = '- `/announce message <message>` Place an announcement in the <#' + config.announcements_channel_id + '> channel \n- `/announce command <command>` Announce a new command \n- `/announce edit <message_id> [message/command] <message/command>` Edit an announcement';
+const usage = `- \`/announce message <message>\` Place an announcement in the <#${config.announcementsChannelId}> channel \n- \`/announce command <command>\` Announce a new command \n- \`/announce edit <message_id> [message/command] <message/command>\` Edit an announcement`;
 
 const subcommands = ['message', 'command', 'edit'];
 
@@ -16,38 +16,46 @@ const execute = async (msg, args, commands) => {
   if (args.length === 0) return;
 
   // Get the subcommand ex: create, delete, invite, ...
-  let subcommand = args[0];
+  const subcommand = args[0];
   if (!subcommands.includes(subcommand)) {
     msg.reply('Unknown command option');
     return;
-  };
+  }
 
-  let announcements_channel = await msg.client.channels.fetch(config.announcements_channel_id);
+  const announcementsChannel = await msg.client.channels.fetch(
+    config.announcementsChannelId
+  );
   if (args[0] === 'message') {
-    announcements_channel.send(args.slice(1).join(' '));
+    announcementsChannel.send(args.slice(1).join(' '));
   } else if (args[0] === 'command') {
     const command = commands.get(args[1]);
     if (command) {
       const embed = new MessageEmbed()
-        .setTitle('✨ New bot command: `/' + command.name + '`')
+        .setTitle(`✨ New bot command: \`/${command.name}\``)
         .setColor(0x370052)
-        .setFooter('Brought to you by ' + msg.author.username, msg.author.avatarURL())
+        .setFooter(
+          `Brought to you by ${msg.author.username}`,
+          msg.author.avatarURL()
+        )
         .setDescription(command.description)
         .addField('Usage: ', command.usage);
-      announcements_channel.send(embed);
+      announcementsChannel.send(embed);
     } else {
       msg.reply('Command not found');
     }
   } else if (args[0] === 'edit') {
-    const message_id = args[1];
-    const messages = await announcements_channel.messages.fetch({ around: message_id, limit: 1 })
-    const message = messages.first()
+    const messageId = args[1];
+    const messages = await announcementsChannel.messages.fetch({
+      around: messageId,
+      limit: 1,
+    });
+    const message = messages.first();
     if (!message) {
       msg.reply('Message not found');
       return;
     }
     if (args[2] === 'message') {
-      message.edit(args.slice(3).join(' '))
+      message.edit(args.slice(3).join(' '));
     } else if (args[2] === 'command') {
       const command = commands.get(args[3]);
       if (!command) {
@@ -55,9 +63,12 @@ const execute = async (msg, args, commands) => {
         return;
       }
       const embed = new MessageEmbed()
-        .setTitle('✨ New bot command: `/' + command.name + '`')
+        .setTitle(`✨ New bot command: \`/${command.name}\``)
         .setColor(0x370052)
-        .setFooter('Brought to you by ' + msg.author.username, msg.author.avatarURL())
+        .setFooter(
+          `Brought to you by ${msg.author.username}`,
+          msg.author.avatarURL()
+        )
         .setDescription(command.description)
         .addField('Usage: ', command.usage);
       message.edit(embed);
@@ -65,9 +76,9 @@ const execute = async (msg, args, commands) => {
       msg.reply('Unkown command option');
     }
   }
-}
+};
 
-let announceCommand = new Command(name, description, usage);
+const announceCommand = new Command(name, description, usage);
 announceCommand.subcommands = subcommands;
 announceCommand.execute = execute;
 

@@ -3,27 +3,27 @@ import Keyv from 'keyv';
 import config from './config.js';
 import * as commands from './commands/index.js';
 
-console.info(`discord.js version: ${Discord.version}`)
+console.info(`discord.js version: ${Discord.version}`);
 
 // Initialize Discord client
 const client = new Discord.Client();
 
 // Shutdown function for clean shutdown
-let shutdown = () => {
+const shutdown = () => {
   console.info('Shutting down...');
   client.destroy();
   process.exit();
-}
+};
 
 // Receive SIGINT
 process.once('SIGINT', () => {
   shutdown();
-})
+});
 
 // Receive SIGTERM
 process.once('SIGTERM', () => {
   shutdown();
-})
+});
 
 // Get all commands from folder
 client.commands = new Discord.Collection();
@@ -32,22 +32,29 @@ for (const command in commands) {
 }
 
 // Connect to redis
-const keyv = new Keyv('redis://' + config.redis.host + ':' + config.redis.port, { namespace: 'alien-network' });
-keyv.on('error', e => console.error('Keyv connection error:', e));
+const keyv = new Keyv(`redis://${config.redis.host}:${config.redis.port}`, {
+  namespace: 'alien-network',
+});
+keyv.on('error', (e) => console.error('Keyv connection error:', e));
 
 client.once('ready', () => {
   console.info('Connected to Discord API');
   client.user.setActivity('everybody 😶', { type: 'WATCHING' });
-})
+});
 
 // Capture client messages
-client.on('message', async msg => {
+client.on('message', async (msg) => {
   // Check if command and not from a bot
   if (!msg.content.startsWith('/') || msg.author.bot) return;
 
   // Check if user is using the bot channel
-  if (msg.channel instanceof Discord.GuildChannel && msg.channel.id !== config.bot_channel_id) {
-    msg.author.send('Please use the <#' + config.bot_channel_id + '> channel for bot commands');
+  if (
+    msg.channel instanceof Discord.GuildChannel &&
+    msg.channel.id !== config.botChannelId
+  ) {
+    msg.author.send(
+      `Please use the <#${config.botChannelId}> channel for bot commands`
+    );
     msg.delete();
     return;
   }
@@ -68,10 +75,10 @@ client.on('message', async msg => {
   } else {
     msg.reply('unkown command');
   }
-})
+});
 
 // Get discord token from environment variable
-const DISCORD_TOKEN = process.env.DISCORD_TOKEN
+const { DISCORD_TOKEN } = process.env;
 
 if (DISCORD_TOKEN) {
   client.login();

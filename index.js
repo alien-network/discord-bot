@@ -1,12 +1,14 @@
 import Discord from 'discord.js';
-import Keyv from 'keyv';
 import config from './config.js';
-import * as commands from './commands/index.js';
+import commands from './commands/index.js';
 
 console.info(`discord.js version: ${Discord.version}`);
 
 // Initialize Discord client
 const client = new Discord.Client();
+
+// Make commands part of client object
+client.commands = commands;
 
 // Shutdown function for clean shutdown
 const shutdown = () => {
@@ -24,18 +26,6 @@ process.once('SIGINT', () => {
 process.once('SIGTERM', () => {
   shutdown();
 });
-
-// Get all commands from folder
-client.commands = new Discord.Collection();
-for (const command in commands) {
-  client.commands.set(commands[command].name, commands[command]);
-}
-
-// Connect to redis
-const keyv = new Keyv(`redis://${config.redis.host}:${config.redis.port}`, {
-  namespace: 'alien-network',
-});
-keyv.on('error', (e) => console.error('Keyv connection error:', e));
 
 client.once('ready', () => {
   console.info('Connected to Discord API');
@@ -61,19 +51,14 @@ client.on('message', async (msg) => {
 
   console.log(`${msg.author.username}: ${msg.content}`);
   const args = msg.content.slice('/'.length).split(/ +/);
-  const command = args.shift().toLowerCase();
+  const commandName = args.shift().toLowerCase();
 
   // Check what command is used
-  if (command === 'help') {
-    client.commands.get('help').execute(msg, args, client.commands);
-  } else if (command === 'announce') {
-    client.commands.get('announce').execute(msg, args, client.commands);
-  } else if (command === 'room') {
-    client.commands.get('room').execute(msg, args, keyv);
-  } else if (command === 'shuffle') {
-    client.commands.get('shuffle').execute(msg, args);
+  const command = client.commands.get(commandName);
+  if (command) {
+    command.execute(msg, args);
   } else {
-    msg.reply('unkown command');
+    msg.reply('unknown command');
   }
 });
 

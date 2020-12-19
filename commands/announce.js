@@ -8,9 +8,9 @@ const usage = `- \`/announce message <message>\` Place an announcement in the <#
 
 const subcommands = ['message', 'command', 'edit'];
 
-const execute = async (msg, args, commands) => {
+const execute = async (msg, args) => {
   // Check if user is admin
-  if (msg.author.id !== config.admin_user_id) return;
+  if (msg.author.id !== config.adminUserId) return;
 
   // No arguments
   if (args.length === 0) return;
@@ -28,7 +28,7 @@ const execute = async (msg, args, commands) => {
   if (args[0] === 'message') {
     announcementsChannel.send(args.slice(1).join(' '));
   } else if (args[0] === 'command') {
-    const command = commands.get(args[1]);
+    const command = msg.client.commands.get(args[1]);
     if (command) {
       const embed = new MessageEmbed()
         .setTitle(`✨ New bot command: \`/${command.name}\``)
@@ -57,7 +57,7 @@ const execute = async (msg, args, commands) => {
     if (args[2] === 'message') {
       message.edit(args.slice(3).join(' '));
     } else if (args[2] === 'command') {
-      const command = commands.get(args[3]);
+      const command = msg.client.commands.get(args[3]);
       if (!command) {
         msg.reply(`Command ${args[3]} not found`);
         return;

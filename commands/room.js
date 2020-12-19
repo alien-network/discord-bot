@@ -1,4 +1,5 @@
 import Command from '../models/command.js';
+import keyv from '../lib/keyv.js';
 
 const name = 'room';
 const description =
@@ -30,7 +31,7 @@ const getUserFromMention = (msg, mention) => {
   return null;
 };
 
-const execute = async (msg, args, keyv) => {
+const execute = async (msg, args) => {
   // No arguments
   if (args.length === 0) return;
 

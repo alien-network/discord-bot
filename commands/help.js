@@ -5,9 +5,9 @@ const name = 'help';
 const description = 'Get more info about other commands';
 const usage = '- `/help <command>` Get more info about a specific command';
 
-const execute = (msg, args, commands) => {
+const execute = (msg, args) => {
   let commandsText = '';
-  commands.forEach((command) => {
+  msg.client.commands.forEach((command) => {
     commandsText += `- \`/${command.name}\`\n`;
   });
   if (args.length === 0) {
@@ -20,7 +20,7 @@ const execute = (msg, args, commands) => {
       .addField('Commands: ', commandsText);
     msg.reply(embed);
   } else {
-    const command = commands.get(args[0]);
+    const command = msg.client.commands.get(args[0]);
     if (!command) {
       msg.reply('Unknown command');
       return;

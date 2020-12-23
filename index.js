@@ -33,7 +33,7 @@ client.once('ready', () => {
 });
 
 // Capture client messages
-client.on('message', async (msg) => {
+client.on('message', (msg) => {
   // Check if command and not from a bot
   if (!msg.content.startsWith('/') || msg.author.bot) return;
 

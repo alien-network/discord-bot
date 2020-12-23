@@ -10,7 +10,8 @@
   "dependencies": {
     "@keyv/redis": "^2.1.2",
     "discord.js": "^12.5.1",
-    "keyv": "^4.0.3"
+    "keyv": "^4.0.3",
+    "node-fetch": "^2.6.1"
   },
   "devDependencies": {
     "eslint": "7.16.0",

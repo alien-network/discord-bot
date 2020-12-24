@@ -101,6 +101,7 @@ const execute = async (msg, args) => {
           media.description
             .replace(/<br\s*[/]?>/gi, '')
             .replace(/<\s*[/]?i\s*[/]?>/gi, '*')
+            .replace(/<\s*[/]?b\s*[/]?>/gi, '**')
         )
         .addField(
           'Status: ',

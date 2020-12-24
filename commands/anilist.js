@@ -12,6 +12,26 @@ const usage = `
 
 const subcommands = ['anime', 'manga', 'character'];
 
+const filterCharacters = (characters, role) => {
+  const roleCharacters = characters.filter(
+    (character) => character.role === role
+  );
+  return roleCharacters;
+};
+
+const charactersString = (characters) => {
+  let roleCharactersString = '';
+  characters.every((character) => {
+    const characterString = `[${character.node.name.full}](https://anilist.co/character/${character.node.id})\n`;
+    if (roleCharactersString.length + characterString.length > 1024) {
+      return false;
+    }
+    roleCharactersString += characterString;
+    return true;
+  });
+  return roleCharactersString;
+}
+
 const execute = async (msg, args) => {
   // No arguments
   if (args.length === 0) return;
@@ -147,43 +167,13 @@ const execute = async (msg, args) => {
           'https://anilist.co/img/icons/android-chrome-512x512.png'
         );
 
-      const backgroundCharacters = characters.filter(
-        (character) => character.role === 'BACKGROUND'
-      );
-      let backgroundCharactersString = '';
-      backgroundCharacters.every((character) => {
-        const characterString = `[${character.node.name.full}](https://anilist.co/character/${character.node.id})\n`;
-        if (backgroundCharactersString.length + characterString.length > 1024) {
-          return false;
-        }
-        backgroundCharactersString += characterString;
-        return true;
-      });
+      const backgroundCharacters = filterCharacters(characters, 'BACKGROUND');
+      const mainCharacters = filterCharacters(characters, 'MAIN');
+      const supportingCharacters = filterCharacters(characters, 'SUPPORTING');
 
-      const mainCharacters = characters.filter(
-        (character) => character.role === 'MAIN'
-      );
-      let mainCharactersString = '';
-      mainCharacters.forEach((character) => {
-        const characterString = `[${character.node.name.full}](https://anilist.co/character/${character.node.id})\n`;
-        if (mainCharactersString.length + characterString.length > 1024) {
-          return false;
-        }
-        mainCharactersString += characterString;
-      });
-
-      const supportingCharacters = characters.filter(
-        (character) => character.role === 'SUPPORTING'
-      );
-      let supportingCharactersString = '';
-      supportingCharacters.every((character) => {
-        const characterString = `[${character.node.name.full}](https://anilist.co/character/${character.node.id})\n`;
-        if (supportingCharactersString.length + characterString.length > 1024) {
-          return false;
-        }
-        supportingCharactersString += characterString;
-        return true;
-      });
+      const backgroundCharactersString = charactersString(backgroundCharacters);
+      const mainCharactersString = charactersString(mainCharacters);
+      const supportingCharactersString = charactersString(supportingCharacters);
 
       if (backgroundCharacters.length > 0) {
         embed.addField('Background characters: ', backgroundCharactersString);

@@ -4,7 +4,11 @@ import Command from '../models/command.js';
 
 const name = 'announce';
 const description = 'Write a announcement';
-const usage = `- \`/announce message <message>\` Place an announcement in the <#${config.announcementsChannelId}> channel \n- \`/announce command <command>\` Announce a new command \n- \`/announce edit <message_id> [message/command] <message/command>\` Edit an announcement`;
+const usage = `
+  - \`/announce message <message>\` Place an announcement in the <#${config.announcementsChannelId}> channel
+  - \`/announce command <command>\` Announce a new command
+  - \`/announce edit <message_id> [message/command] <message/command>\` Edit an announcement
+  `;
 
 const subcommands = ['message', 'command', 'edit'];
 

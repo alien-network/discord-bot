@@ -3,12 +3,13 @@ import Command from '../models/command.js';
 import getData from '../lib/anilist-api.js';
 
 const name = 'anilist';
-const description = 'AniList commands';
+const description =
+  'Get information about your favorite anime, manga or character. Powered by AniList. ';
 const usage = `
-- \`/anilist [anime/manga/character] info <query>\` Info about an anime, manga or character 
-- \`/anilist [anime/manga] characters <query>\` Characters that play in the anime or manga
-- \`/anilist character media <query>\` Media the character has played in.
-`;
+  - \`/anilist [anime/manga/character] info <query>\` Info about an anime, manga or character
+  - \`/anilist [anime/manga] characters <media>\` Characters that play in the anime or manga
+  - \`/anilist character media <character>\` Media (anime/manga) the character has played in
+  `;
 
 const subcommands = ['anime', 'manga', 'character'];
 

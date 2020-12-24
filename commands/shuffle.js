@@ -4,7 +4,8 @@ import Command from '../models/command.js';
 const name = 'shuffle';
 const description =
   'Shuffle users to different voice channels. Useful for playing against eachother in random teams';
-const usage = `- \`/shuffle <n_teams>\` Shuffle all connected users in <#${config.shuffleLobbyId}> to n different voice channels`;
+const usage = `
+  - \`/shuffle <n_teams>\` Shuffle all connected users in <#${config.shuffleLobbyId}> to n different voice channels`;
 
 const shuffleArray = (a) => {
   for (let i = a.length - 1; i > 0; i--) {

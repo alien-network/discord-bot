@@ -30,7 +30,27 @@ const charactersString = (characters) => {
     return true;
   });
   return roleCharactersString;
-}
+};
+
+const filterMedia = (media, type) => {
+  const typeMedia = media.filter((medium) => medium.type === type);
+  return typeMedia;
+};
+
+const mediaString = (media) => {
+  let typeMediaString = '';
+  media.every((medium) => {
+    const mediumString = `[${
+      medium.title.romaji
+    }](https://anilist.co/${medium.type.toLowerCase()}/${medium.id})\n`;
+    if (typeMediaString.length + mediumString.length > 1024) {
+      return false;
+    }
+    typeMediaString += mediumString;
+    return true;
+  });
+  return typeMediaString;
+};
 
 const execute = async (msg, args) => {
   // No arguments
@@ -186,6 +206,104 @@ const execute = async (msg, args) => {
 
       if (supportingCharacters.length > 0) {
         embed.addField('Supporting characters: ', supportingCharactersString);
+      }
+
+      msg.channel.send(embed);
+    }
+  } else if (subcommand === 'character') {
+    if (args[1] === 'info') {
+      const query = `
+      query ($searchQuery: String) {
+        Character (search: $searchQuery) {
+          id
+          name {
+            full
+          }
+          description
+          image {
+            large
+          }
+        }
+      }    
+      `;
+      const variables = {
+        searchQuery,
+      };
+
+      const character = await getData(query, variables).then(
+        (data) => data.data.Character
+      );
+
+      const embed = new MessageEmbed()
+        .setTitle(`(C) ${character.name.full}`)
+        .setURL(`https://anilist.co/character/${character.id}`)
+        .setThumbnail(character.image.large)
+        .setDescription(
+          character.description
+            .replace(/<br\s*[/]?>/gi, '')
+            .replace(/<\s*[/]?i\s*[/]?>/gi, '*')
+            .replace(/<\s*[/]?b\s*[/]?>/gi, '**')
+        )
+        .setFooter(
+          'Powered by AniList',
+          'https://anilist.co/img/icons/android-chrome-512x512.png'
+        );
+
+      msg.channel.send(embed);
+    } else if (args[1] === 'media') {
+      const query = `
+      query ($searchQuery: String) {
+        Character (search: $searchQuery) {
+          id
+          name {
+            full
+          }
+          image {
+            large
+          }
+          media (sort: ID) {
+            nodes {
+              id
+              title {
+                romaji
+              }
+              type
+            }
+          }
+        }
+      }
+      `;
+      const variables = {
+        searchQuery,
+      };
+
+      const character = await getData(query, variables).then(
+        (data) => data.data.Character
+      );
+
+      const media = character.media.nodes;
+
+      const embed = new MessageEmbed()
+        .setTitle(`(C) ${character.name.full} media`)
+        .setURL(`https://anilist.co/character/${character.id}`)
+        .setThumbnail(character.image.large)
+        .setFooter(
+          'Powered by AniList',
+          'https://anilist.co/img/icons/android-chrome-512x512.png'
+        );
+
+      const animeMedia = filterMedia(media, 'ANIME');
+      const mangaMedia = filterMedia(media, 'MANGA');
+
+      const animeMediaString = mediaString(animeMedia);
+      const mangaMediaString = mediaString(mangaMedia);
+
+      if (animeMedia.length > 0) {
+        embed.addField('Anime: ', animeMediaString);
+      }
+
+      if (mangaMedia.length > 0) {
+        embed.addField('Manga: ', mangaMediaString);
       }
 
       msg.channel.send(embed);

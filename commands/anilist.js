@@ -17,7 +17,7 @@ const execute = async (msg, args) => {
   if (args.length === 0) return;
 
   // Get the subcommand ex: create, delete, invite, ...
-  const subcommand = args[0];
+  const subcommand = args[0].toLowerCase();
   if (!subcommands.includes(subcommand)) {
     msg.reply('Unknown command option');
     return;
@@ -25,11 +25,18 @@ const execute = async (msg, args) => {
 
   const searchQuery = args.slice(2).join(' ');
 
-  if (args[0] === 'anime') {
+  if (subcommand === 'anime' || subcommand === 'manga') {
+    let shorthand = '';
+    if (subcommand === 'anime') {
+      shorthand = '(A)';
+    } else if (subcommand === 'manga') {
+      shorthand = '(M)';
+    }
+
     if (args[1] === 'info') {
       const query = `
-      query ($searchQuery: String) {
-        Media (search: $searchQuery, type: ANIME) {
+      query ($searchQuery: String, $type: MediaType) {
+        Media (search: $searchQuery, type: $type) {
           id
           title {
             romaji
@@ -51,14 +58,15 @@ const execute = async (msg, args) => {
 
       const variables = {
         searchQuery,
+        type: subcommand.toUpperCase(),
       };
 
       const media = await getData(query, variables).then(
         (data) => data.data.Media
       );
 
+      // Next airing episode text
       let nextEpisodeDateText = null;
-
       if (media.nextAiringEpisode) {
         const nextEpisodeDate = new Date(
           media.nextAiringEpisode.airingAt * 1000
@@ -67,8 +75,8 @@ const execute = async (msg, args) => {
       }
 
       const embed = new MessageEmbed()
-        .setTitle(media.title.romaji)
-        .setURL(`https://anilist.co/anime/${media.id}`)
+        .setTitle(`${shorthand} ${media.title.romaji}`)
+        .setURL(`https://anilist.co/${subcommand}/${media.id}`)
         .setDescription(
           media.description
             .replace(/<br\s*[/]?>/gi, '')
@@ -93,8 +101,8 @@ const execute = async (msg, args) => {
       msg.channel.send(embed);
     } else if (args[1] === 'characters') {
       const query = `
-      query ($searchQuery: String) {
-        Media (search: $searchQuery, type: ANIME) {
+      query ($searchQuery: String, $type: MediaType) {
+        Media (search: $searchQuery, type: $type) {
           title {
             romaji
           }
@@ -112,20 +120,17 @@ const execute = async (msg, args) => {
                 name {
                   full
                 }
-                image {
-                  medium
-                }
               }
               role
             }
           }
         }
       }
-      
       `;
 
       const variables = {
         searchQuery,
+        type: subcommand.toUpperCase(),
       };
 
       const media = await getData(query, variables).then(
@@ -134,7 +139,7 @@ const execute = async (msg, args) => {
       const characters = media.characters.edges;
 
       const embed = new MessageEmbed()
-        .setTitle(`${media.title.romaji} characters`)
+        .setTitle(`${shorthand} ${media.title.romaji} characters`)
         .setThumbnail(media.coverImage.large)
         .setColor(media.coverImage.color)
         .setFooter(

@@ -105,6 +105,11 @@ const execute = async (msg, args) => {
         (data) => data.data.Media
       );
 
+      if (media === null) {
+        msg.reply('media not found');
+        return;
+      }
+
       // Next airing episode text
       let nextEpisodeDateText = null;
       if (media.nextAiringEpisode) {
@@ -177,6 +182,12 @@ const execute = async (msg, args) => {
       const media = await getData(query, variables).then(
         (data) => data.data.Media
       );
+
+      if (media === null) {
+        msg.reply('media not found');
+        return;
+      }
+
       const characters = media.characters.edges;
 
       const embed = new MessageEmbed()
@@ -234,6 +245,11 @@ const execute = async (msg, args) => {
         (data) => data.data.Character
       );
 
+      if (character === null) {
+        msg.reply('character not found');
+        return;
+      }
+
       const embed = new MessageEmbed()
         .setTitle(`(C) ${character.name.full}`)
         .setURL(`https://anilist.co/character/${character.id}`)
@@ -280,6 +296,11 @@ const execute = async (msg, args) => {
       const character = await getData(query, variables).then(
         (data) => data.data.Character
       );
+
+      if (character === null) {
+        msg.reply('character not found');
+        return;
+      }
 
       const media = character.media.nodes;
 

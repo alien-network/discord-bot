@@ -9,7 +9,7 @@
   "type": "module",
   "dependencies": {
     "@keyv/redis": "^2.1.2",
-    "discord.js": "^12.5.1",
+    "discord.js": "^12.5.2",
     "keyv": "^4.0.3",
     "node-fetch": "^2.6.1"
   },

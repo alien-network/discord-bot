@@ -2,7 +2,7 @@ version: '3'
 
 services:
   an-bot-db: 
-    image: redis:6.0-alpine
+    image: redis:6.2.4-alpine3.13
     container_name: an-bot-db
     restart: unless-stopped
     volumes:
@@ -10,12 +10,12 @@ services:
 
   an-bot:
     build: .
-    image: alien-network/discord-bot:latest
+    image: aliennetwork/discord-bot:0.4.0
     container_name: an-bot
     restart: unless-stopped
     env_file: .env
     volumes:
-      - ./config.json:/home/node/app/config.json:ro
+      - ./config.js:/home/node/app/config.js:ro
     depends_on:
       - an-bot-db
 

@@ -5,7 +5,13 @@ import commands from './commands/index.js';
 console.info(`discord.js version: ${Discord.version}`);
 
 // Initialize Discord client
-const client = new Discord.Client();
+const client = new Discord.Client({
+  intents: [
+    Discord.Intents.FLAGS.GUILDS,
+    Discord.Intents.FLAGS.GUILD_MESSAGES,
+    Discord.Intents.FLAGS.GUILD_VOICE_STATES,
+  ],
+});
 
 // Make commands part of client object
 client.commands = commands;
@@ -32,33 +38,29 @@ client.once('ready', () => {
   client.user.setActivity('everybody 😶', { type: 'WATCHING' });
 });
 
-// Capture client messages
-client.on('message', (msg) => {
-  // Check if command and not from a bot
-  if (!msg.content.startsWith('/') || msg.author.bot) return;
+client.on('interactionCreate', async (interaction) => {
+  if (!interaction.isCommand()) return;
 
-  // Check if user is using the bot channel
-  if (
-    msg.channel instanceof Discord.GuildChannel &&
-    msg.channel.id !== config.botChannelId
-  ) {
-    msg.author.send(
-      `Please use the <#${config.botChannelId}> channel for bot commands`
-    );
-    msg.delete();
+  if (interaction.channel.id !== config.botChannelId) {
+    interaction.reply({
+      content: `Please use the <#${config.botChannelId}> channel for bot commands`,
+      ephemeral: true,
+    });
     return;
   }
 
-  console.log(`${msg.author.username}: ${msg.content}`);
-  const args = msg.content.slice('/'.length).split(/ +/);
-  const commandName = args.shift().toLowerCase();
+  const command = client.commands.get(interaction.commandName);
 
-  // Check what command is used
-  const command = client.commands.get(commandName);
-  if (command) {
-    command.execute(msg, args);
-  } else {
-    msg.reply('unknown command');
+  if (!command) return;
+
+  try {
+    await command.execute(interaction);
+  } catch (error) {
+    console.error(error);
+    await interaction.reply({
+      content: 'There was an error while executing this command!',
+      ephemeral: true,
+    });
   }
 });
 

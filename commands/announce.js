@@ -1,89 +1,73 @@
+import { SlashCommandBuilder } from '@discordjs/builders';
 import { MessageEmbed } from 'discord.js';
 import config from '../config.js';
-import Command from '../models/command.js';
 
-const name = 'announce';
-const description = 'Write a announcement';
-const usage = `
-  - \`/announce message <message>\` Place an announcement in the <#${config.announcementsChannelId}> channel
-  - \`/announce command <command>\` Announce a new command
-  - \`/announce edit <message_id> [message/command] <message/command>\` Edit an announcement
-  `;
-
-const subcommands = ['message', 'command', 'edit'];
-
-const execute = async (msg, args) => {
-  // Check if user is admin
-  if (msg.author.id !== config.adminUserId) return;
-
-  // No arguments
-  if (args.length === 0) return;
-
-  // Get the subcommand ex: create, delete, invite, ...
-  const subcommand = args[0];
-  if (!subcommands.includes(subcommand)) {
-    msg.reply('Unknown command option');
-    return;
-  }
-
-  const announcementsChannel = await msg.client.channels.fetch(
-    config.announcementsChannelId
-  );
-  if (args[0] === 'message') {
-    announcementsChannel.send(args.slice(1).join(' '));
-  } else if (args[0] === 'command') {
-    const command = msg.client.commands.get(args[1]);
-    if (command) {
-      const embed = new MessageEmbed()
-        .setTitle(`✨ New bot command: \`/${command.name}\``)
-        .setColor(0x370052)
-        .setFooter(
-          `Brought to you by ${msg.author.username}`,
-          msg.author.avatarURL()
+export default {
+  data: new SlashCommandBuilder()
+    .setName('announce')
+    .setDescription('Write an announcement')
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('message')
+        .setDescription('Announce a message')
+        .addStringOption((option) =>
+          option.setName('m').setDescription('Message').setRequired(true)
         )
-        .setDescription(command.description)
-        .addField('Usage: ', command.usage);
-      announcementsChannel.send(embed);
-    } else {
-      msg.reply('Command not found');
-    }
-  } else if (args[0] === 'edit') {
-    const messageId = args[1];
-    const messages = await announcementsChannel.messages.fetch({
-      around: messageId,
-      limit: 1,
-    });
-    const message = messages.first();
-    if (!message) {
-      msg.reply('Message not found');
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('command')
+        .setDescription('Announce a command')
+        .addStringOption((option) =>
+          option.setName('c').setDescription('Command').setRequired(true)
+        )
+    ),
+  async execute(interaction) {
+    // Check if user is admin
+    if (interaction.member.id !== config.adminUserId) {
+      interaction.reply({
+        content: 'You are not an administrator',
+        ephemeral: true,
+      });
       return;
     }
-    if (args[2] === 'message') {
-      message.edit(args.slice(3).join(' '));
-    } else if (args[2] === 'command') {
-      const command = msg.client.commands.get(args[3]);
+
+    // Get the subcommand ex: message, command, ...
+    const subcommand = interaction.options.getSubcommand();
+
+    const announcementsChannel = await interaction.client.channels.fetch(
+      config.announcementsChannelId
+    );
+    if (subcommand === 'message') {
+      announcementsChannel.send(interaction.options.getString('m'));
+      interaction.reply({
+        content: `Message sent in <#${config.announcementsChannelId}>`,
+        ephemeral: true,
+      });
+    } else if (subcommand === 'command') {
+      const command = interaction.client.commands.get(
+        interaction.options.getString('c')
+      );
       if (!command) {
-        msg.reply(`Command ${args[3]} not found`);
+        interaction.reply({
+          content: 'Command not found',
+          ephemeral: true,
+        });
         return;
       }
       const embed = new MessageEmbed()
-        .setTitle(`✨ New bot command: \`/${command.name}\``)
+        .setTitle(`✨ New bot command: \`/${command.data.name}\``)
         .setColor(0x370052)
         .setFooter(
-          `Brought to you by ${msg.author.username}`,
-          msg.author.avatarURL()
+          `Brought to you by ${interaction.member.displayName}`,
+          interaction.member.user.displayAvatarURL()
         )
-        .setDescription(command.description)
-        .addField('Usage: ', command.usage);
-      message.edit(embed);
-    } else {
-      msg.reply('Unkown command option');
+        .setDescription(command.data.description);
+      announcementsChannel.send({ embeds: [embed] });
+      interaction.reply({
+        content: `Command ${command.data.name} announced in <#${config.announcementsChannelId}>`,
+        ephemeral: true,
+      });
     }
-  }
+  },
 };
-
-const announceCommand = new Command(name, description, usage);
-announceCommand.subcommands = subcommands;
-announceCommand.execute = execute;
-
-export default announceCommand;

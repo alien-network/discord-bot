@@ -9,9 +9,7 @@
   "type": "module",
   "dependencies": {
     "@discordjs/builders": "^0.6.0",
-    "@keyv/redis": "^2.1.2",
     "discord.js": "^13.1.0",
-    "keyv": "^4.0.3",
     "node-fetch": "^2.6.1"
   },
   "devDependencies": {

@@ -3,7 +3,7 @@ version: '3'
 services:
   an-bot:
     build: .
-    image: aliennetwork/discord-bot:0.5.0
+    image: aliennetwork/discord-bot:0.6.0
     container_name: an-bot
     restart: unless-stopped
     env_file: .env

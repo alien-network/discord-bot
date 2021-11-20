@@ -28,7 +28,10 @@ export default {
         .setName('jellyfin')
         .setDescription('Announce a new movie, serie or season on Jellyfin')
         .addIntegerOption((option) =>
-          option.setName('id').setDescription('Id of the item on AniList').setRequired(true)
+          option
+            .setName('id')
+            .setDescription('Id of the item on AniList')
+            .setRequired(true)
         )
     ),
   async execute(interaction) {
@@ -78,9 +81,10 @@ export default {
         ephemeral: true,
       });
     } else if (subcommand === 'jellyfin') {
-      const jellyfinAnnouncementsChannel = await interaction.client.channels.fetch(
-        config.jellyfinAnnouncementsChannelId
-      );
+      const jellyfinAnnouncementsChannel =
+        await interaction.client.channels.fetch(
+          config.jellyfinAnnouncementsChannelId
+        );
       const query = `
       query ($id: Int) {
         Media (id: $id, type: ANIME) {
@@ -110,7 +114,9 @@ export default {
       const embed = new MessageEmbed()
         .setTitle(`${media.title.english} now available on Jellyfin!`)
         .setImage(media.coverImage.large)
-        .setDescription(`Watch ${media.title.english} in super duper high quality on https://jellyfin.jdtech.dev`)
+        .setDescription(
+          `Watch ${media.title.english} in super duper high quality on https://jellyfin.jdtech.dev`
+        )
         .addField(
           'Description',
           description

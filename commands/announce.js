@@ -1,6 +1,7 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
 import { MessageEmbed } from 'discord.js';
 import config from '../config.js';
+import anilist from '../lib/anilist-api.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -20,6 +21,14 @@ export default {
         .setDescription('Announce a command')
         .addStringOption((option) =>
           option.setName('c').setDescription('Command').setRequired(true)
+        )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('jellyfin')
+        .setDescription('Announce a new movie, serie or season on Jellyfin')
+        .addIntegerOption((option) =>
+          option.setName('id').setDescription('Id of the item on AniList').setRequired(true)
         )
     ),
   async execute(interaction) {
@@ -66,6 +75,62 @@ export default {
       announcementsChannel.send({ embeds: [embed] });
       interaction.reply({
         content: `Command ${command.data.name} announced in <#${config.announcementsChannelId}>`,
+        ephemeral: true,
+      });
+    } else if (subcommand === 'jellyfin') {
+      const jellyfinAnnouncementsChannel = await interaction.client.channels.fetch(
+        config.jellyfinAnnouncementsChannelId
+      );
+      const query = `
+      query ($id: Int) {
+        Media (id: $id, type: ANIME) {
+          id
+          type
+          title {
+            english
+          }
+          description (asHtml: false)
+          episodes
+          coverImage {
+            large
+            color
+          }
+        }
+      }`;
+      const variables = {
+        id: interaction.options.getInteger('id'),
+      };
+      const data = await anilist.getData(query, variables);
+      const media = data.data.Media;
+      console.log(media);
+      let { description } = media;
+      if (media.description.length > 1024) {
+        description = `${media.description.substring(0, 1023)}…`;
+      }
+      const embed = new MessageEmbed()
+        .setTitle(`${media.title.english} now available on Jellyfin!`)
+        .setImage(media.coverImage.large)
+        .setDescription(`Watch ${media.title.english} in super duper high quality on https://jellyfin.jdtech.dev`)
+        .addField(
+          'Description',
+          description
+            .replace(/<br\s*[/]?>/gi, '')
+            .replace(/<\s*[/]?i\s*[/]?>/gi, '*')
+            .replace(/<\s*[/]?b\s*[/]?>/gi, '**')
+        )
+        .addField(
+          'Epîsodes',
+          media.episodes ? media.episodes.toString() : 'N/A',
+          true
+        )
+        .setColor(media.coverImage.color)
+        .setFooter(
+          'Powered by AniList',
+          'https://anilist.co/img/icons/android-chrome-512x512.png'
+        );
+      jellyfinAnnouncementsChannel.send({ embeds: [embed] });
+      interaction.reply({
+        content: `Announcement sent in <#${config.jellyfinAnnouncementsChannelId}>`,
         ephemeral: true,
       });
     }

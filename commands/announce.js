@@ -70,10 +70,10 @@ export default {
       const embed = new MessageEmbed()
         .setTitle(`✨ New bot command: \`/${command.data.name}\``)
         .setColor(0x370052)
-        .setFooter(
-          `Brought to you by ${interaction.member.displayName}`,
-          interaction.member.user.displayAvatarURL()
-        )
+        .setFooter({
+          text: `Brought to you by ${interaction.member.displayName}`,
+          iconUrl: interaction.member.user.displayAvatarURL(),
+        })
         .setDescription(command.data.description);
       announcementsChannel.send({ embeds: [embed] });
       interaction.reply({
@@ -106,7 +106,6 @@ export default {
       };
       const data = await anilist.getData(query, variables);
       const media = data.data.Media;
-      console.log(media);
       let { description } = media;
       if (media.description.length > 1024) {
         description = `${media.description.substring(0, 1023)}…`;
@@ -130,10 +129,10 @@ export default {
           true
         )
         .setColor(media.coverImage.color)
-        .setFooter(
-          'Powered by AniList',
-          'https://anilist.co/img/icons/android-chrome-512x512.png'
-        );
+        .setFooter({
+          text: 'Powered by AniList',
+          iconUrl: 'https://anilist.co/img/icons/android-chrome-512x512.png',
+        });
       jellyfinAnnouncementsChannel.send({ embeds: [embed] });
       interaction.reply({
         content: `Announcement sent in <#${config.jellyfinAnnouncementsChannelId}>`,

@@ -35,7 +35,7 @@ process.once('SIGTERM', () => {
 
 client.once('ready', () => {
   console.info('Connected to Discord API');
-  client.user.setActivity('everybody 😶', { type: 'WATCHING' });
+  client.user.setActivity(config.activity, { type: config.activityType });
 });
 
 client.on('interactionCreate', async (interaction) => {

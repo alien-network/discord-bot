@@ -68,7 +68,9 @@ client.on('interactionCreate', async (interaction) => {
 const { DISCORD_TOKEN } = process.env;
 
 if (DISCORD_TOKEN) {
-  client.login();
+  client.login().catch((e) => {
+    console.error(`Error logging in to Discord: ${e}`);
+  });
 } else {
   console.error('Please set the DISCORD_TOKEN environment variable');
   shutdown();

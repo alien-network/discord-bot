@@ -4,7 +4,7 @@
   "description": "Alien Network Discord Bot",
   "main": "index.js",
   "repository": "https://github.com/alien-network/discord-bot.git",
-  "author": "jarnedemeulemeester <jarne.demeulemeester@student.howest.be>",
+  "author": "jarnedemeulemeester <jarnedemeulemeester@gmail.com>",
   "license": "GPL-3.0",
   "type": "module",
   "dependencies": {
@@ -16,12 +16,7 @@
   },
   "devDependencies": {
     "eslint": "8.10.0",
-    "eslint-config-airbnb-base": "15.0.0",
-    "eslint-config-node": "^4.1.0",
     "eslint-config-prettier": "^8.5.0",
-    "eslint-plugin-import": "^2.25.4",
-    "eslint-plugin-node": "^11.1.0",
-    "eslint-plugin-prettier": "^4.0.0",
     "prettier": "^2.5.1"
   }
 }

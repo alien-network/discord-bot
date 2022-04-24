@@ -2,6 +2,7 @@ import { SlashCommandBuilder } from '@discordjs/builders';
 import { MessageEmbed } from 'discord.js';
 import config from '../config.js';
 import anilist from '../lib/anilist-api.js';
+import tmdb from '../lib/tmdb-api.js';
 
 export default {
   data: new SlashCommandBuilder()
@@ -25,12 +26,35 @@ export default {
     )
     .addSubcommand((subcommand) =>
       subcommand
-        .setName('jellyfin')
+        .setName('anilist')
         .setDescription('Announce a new movie, serie or season on Jellyfin')
         .addIntegerOption((option) =>
           option
             .setName('id')
             .setDescription('Id of the item on AniList')
+            .setRequired(true)
+        )
+    )
+    .addSubcommand((subcommand) =>
+      subcommand
+        .setName('tmdb')
+        .setDescription('Announce a new episode on Jellyfin')
+        .addIntegerOption((option) =>
+          option
+            .setName('tv_id')
+            .setDescription('Id of the tv show')
+            .setRequired(true)
+        )
+        .addIntegerOption((option) =>
+          option
+            .setName('season_number')
+            .setDescription('Season number')
+            .setRequired(true)
+        )
+        .addIntegerOption((option) =>
+          option
+            .setName('episode_number')
+            .setDescription('Episode number')
             .setRequired(true)
         )
     ),
@@ -114,7 +138,7 @@ export default {
         .setTitle(`${media.title.english} now available on Jellyfin!`)
         .setImage(media.coverImage.large)
         .setDescription(
-          `Watch ${media.title.english} in super duper high quality on https://jellyfin.jdtech.dev`
+          `Watch ${media.title.english} on https://jellyfin.jdtech.dev`
         )
         .addField(
           'Description',
@@ -124,14 +148,41 @@ export default {
             .replace(/<\s*[/]?b\s*[/]?>/gi, '**')
         )
         .addField(
-          'Epîsodes',
+          'Episodes',
           media.episodes ? media.episodes.toString() : 'N/A',
           true
         )
         .setColor(media.coverImage.color)
         .setFooter({
           text: 'Powered by AniList',
-          iconUrl: 'https://anilist.co/img/icons/android-chrome-512x512.png',
+          iconURL: 'https://anilist.co/img/icons/android-chrome-512x512.png',
+        });
+      jellyfinAnnouncementsChannel.send({ embeds: [embed] });
+      interaction.reply({
+        content: `Announcement sent in <#${config.jellyfinAnnouncementsChannelId}>`,
+        ephemeral: true,
+      });
+    } else if (subcommand === 'tmdb') {
+      const jellyfinAnnouncementsChannel =
+        await interaction.client.channels.fetch(
+          config.jellyfinAnnouncementsChannelId
+        );
+      let tvId = interaction.options.getInteger('tv_id')
+      let seasonNumber = interaction.options.getInteger('season_number')
+      let episodeNumber = interaction.options.getInteger('episode_number')
+      const configurationData = await tmdb.getConfiguration();
+      const tvShowData = await tmdb.getTvShow(tvId);
+      const seasonData = await tmdb.getSeason(tvId, seasonNumber);
+      const episodeData = await tmdb.getEpisode(tvId, seasonNumber, episodeNumber);
+      const embed = new MessageEmbed()
+        .setTitle(`${tvShowData.name} ${seasonData.name} Episode ${episodeNumber} is now available on Jellyfin!`)
+        .setImage(`${configurationData.images.secure_base_url}original${episodeData.still_path}`)
+        .setThumbnail(`${configurationData.images.secure_base_url}original${seasonData.poster_path}`)
+        .setDescription(episodeData.overview)
+        .setColor('#0d253f')
+        .setFooter({
+          text: 'Powered by TMDB',
+          iconURL: 'https://www.themoviedb.org/assets/2/favicon-43c40950dbf3cffd5e6d682c5a8986dfdc0ac90dce9f59da9ef072aaf53aebb3.png',
         });
       jellyfinAnnouncementsChannel.send({ embeds: [embed] });
       interaction.reply({

@@ -1,6 +1,6 @@
 {
   "name": "alien-network-bot",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "description": "Alien Network Discord Bot",
   "main": "index.js",
   "repository": "https://github.com/alien-network/discord-bot.git",

@@ -104,7 +104,7 @@ export default {
         content: `Command ${command.data.name} announced in <#${config.announcementsChannelId}>`,
         ephemeral: true,
       });
-    } else if (subcommand === 'jellyfin') {
+    } else if (subcommand === 'anilist') {
       const jellyfinAnnouncementsChannel =
         await interaction.client.channels.fetch(
           config.jellyfinAnnouncementsChannelId

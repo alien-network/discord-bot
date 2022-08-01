@@ -12,7 +12,7 @@
     "@discordjs/rest": "^1.0.1",
     "discord-api-types": "^0.36.3",
     "discord.js": "^14.1.2",
-    "node-fetch": "^3.2.9"
+    "node-fetch": "^3.2.10"
   },
   "devDependencies": {
     "eslint": "8.20.0",

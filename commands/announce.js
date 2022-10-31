@@ -1,5 +1,5 @@
 import { SlashCommandBuilder } from '@discordjs/builders';
-import { MessageEmbed } from 'discord.js';
+import { EmbedBuilder } from 'discord.js';
 import config from '../config.js';
 import anilist from '../lib/anilist-api.js';
 import tmdb from '../lib/tmdb-api.js';
@@ -91,7 +91,7 @@ export default {
         });
         return;
       }
-      const embed = new MessageEmbed()
+      const embed = new EmbedBuilder()
         .setTitle(`✨ New bot command: \`/${command.data.name}\``)
         .setColor(0x370052)
         .setFooter({
@@ -134,23 +134,15 @@ export default {
       if (media.description.length > 1024) {
         description = `${media.description.substring(0, 1023)}…`;
       }
-      const embed = new MessageEmbed()
+      const embed = new EmbedBuilder()
         .setTitle(`${media.title.english} now available on Jellyfin!`)
         .setImage(media.coverImage.large)
         .setDescription(
           `Watch ${media.title.english} on https://jellyfin.jdtech.dev`
         )
-        .addField(
-          'Description',
-          description
-            .replace(/<br\s*[/]?>/gi, '')
-            .replace(/<\s*[/]?i\s*[/]?>/gi, '*')
-            .replace(/<\s*[/]?b\s*[/]?>/gi, '**')
-        )
-        .addField(
-          'Episodes',
-          media.episodes ? media.episodes.toString() : 'N/A',
-          true
+        .addFields(
+          { name: 'Description', value: description.replace(/<br\s*[/]?>/gi, '').replace(/<\s*[/]?i\s*[/]?>/gi, '*').replace(/<\s*[/]?b\s*[/]?>/gi, '**')}, 
+          { name: 'Episodes', value: media.episodes ? media.episodes.toString() : 'N/A', inline: true}
         )
         .setColor(media.coverImage.color)
         .setFooter({
@@ -174,7 +166,7 @@ export default {
       const tvShowData = await tmdb.getTvShow(tvId);
       const seasonData = await tmdb.getSeason(tvId, seasonNumber);
       const episodeData = await tmdb.getEpisode(tvId, seasonNumber, episodeNumber);
-      const embed = new MessageEmbed()
+      const embed = new EmbedBuilder()
         .setTitle(`${tvShowData.name} ${seasonData.name} Episode ${episodeNumber} is now available on Jellyfin!`)
         .setImage(`${configurationData.images.secure_base_url}original${episodeData.still_path}`)
         .setThumbnail(`${configurationData.images.secure_base_url}original${seasonData.poster_path}`)

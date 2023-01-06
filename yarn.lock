@@ -236,10 +236,10 @@ deep-is@^0.1.3:
   resolved "https://registry.yarnpkg.com/deep-is/-/deep-is-0.1.4.tgz#a6f2dce612fadd2ef1f519b73551f17e85199831"
   integrity sha512-oIPzksmTg4/MriiaYGO+okXDT7ztn/w3Eptv/+gSIdMdKsJo0u4CfYNFJPy+4SKMuCqGw2wxnA+URMg3t8a/bQ==
 
-discord-api-types@^0.37.20, discord-api-types@^0.37.23, discord-api-types@^0.37.25:
-  version "0.37.25"
-  resolved "https://registry.yarnpkg.com/discord-api-types/-/discord-api-types-0.37.25.tgz#bee7fd09bd4afb9d0e2983ef837ca1cad5df0e5c"
-  integrity sha512-aCwA2sWnL1zPQgTELkkMzQneuWyCXXUjZCUKswesiE6RDCfOfxAPXOHg6ZTlBA5layPSikGCBBRjyh8S3Wzd+A==
+discord-api-types@^0.37.20, discord-api-types@^0.37.23, discord-api-types@^0.37.26:
+  version "0.37.26"
+  resolved "https://registry.yarnpkg.com/discord-api-types/-/discord-api-types-0.37.26.tgz#1bae81c294b18dffc76b40730a9b48ed7789b8a9"
+  integrity sha512-xZT6qosExE1ziBgD8vYU2R2aQQKOrSYWI6AFq5CiYhQtwR+Nkt9gPA3v9kHj2RFnsWDI2AbtESiQ4Rrhsa06+Q==
 
 discord.js@^14.7.1:
   version "14.7.1"

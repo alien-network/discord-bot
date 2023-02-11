@@ -41,21 +41,21 @@ export default {
         .setDescription('Announce a new episode on Jellyfin')
         .addIntegerOption((option) =>
           option
-            .setName('tv_id')
-            .setDescription('Id of the tv show')
+            .setName('id')
+            .setDescription('Id of the movie or show')
             .setRequired(true)
         )
         .addIntegerOption((option) =>
           option
             .setName('season_number')
             .setDescription('Season number')
-            .setRequired(true)
+            .setRequired(false)
         )
         .addIntegerOption((option) =>
           option
             .setName('episode_number')
             .setDescription('Episode number')
-            .setRequired(true)
+            .setRequired(false)
         )
     ),
   async execute(interaction) {
@@ -159,23 +159,36 @@ export default {
         await interaction.client.channels.fetch(
           config.jellyfinAnnouncementsChannelId
         );
-      let tvId = interaction.options.getInteger('tv_id')
+      let tvId = interaction.options.getInteger('id')
       let seasonNumber = interaction.options.getInteger('season_number')
       let episodeNumber = interaction.options.getInteger('episode_number')
       const configurationData = await tmdb.getConfiguration();
       const tvShowData = await tmdb.getTvShow(tvId);
-      const seasonData = await tmdb.getSeason(tvId, seasonNumber);
-      const episodeData = await tmdb.getEpisode(tvId, seasonNumber, episodeNumber);
-      const embed = new EmbedBuilder()
-        .setTitle(`${tvShowData.name} ${seasonData.name} Episode ${episodeNumber} is now available on Jellyfin!`)
-        .setImage(`${configurationData.images.secure_base_url}original${episodeData.still_path}`)
-        .setThumbnail(`${configurationData.images.secure_base_url}original${seasonData.poster_path}`)
-        .setDescription(episodeData.overview)
-        .setColor('#0d253f')
-        .setFooter({
-          text: 'Powered by TMDB',
-          iconURL: 'https://www.themoviedb.org/assets/2/favicon-43c40950dbf3cffd5e6d682c5a8986dfdc0ac90dce9f59da9ef072aaf53aebb3.png',
-        });
+      let embed;
+      if (!seasonNumber && !episodeNumber) {
+        embed = new EmbedBuilder()
+          .setTitle(`${tvShowData.name} is now available on Jellyfin!`)
+          .setImage(`${configurationData.images.secure_base_url}original${tvShowData.poster_path}`)
+          .setDescription(tvShowData.overview)
+          .setColor('#0d253f')
+          .setFooter({
+            text: 'Powered by TMDB',
+            iconURL: 'https://www.themoviedb.org/assets/2/favicon-43c40950dbf3cffd5e6d682c5a8986dfdc0ac90dce9f59da9ef072aaf53aebb3.png',
+          });
+      } else {
+        const seasonData = await tmdb.getSeason(tvId, seasonNumber);
+        const episodeData = await tmdb.getEpisode(tvId, seasonNumber, episodeNumber);
+        embed = new EmbedBuilder()
+          .setTitle(`${tvShowData.name} ${seasonData.name} Episode ${episodeNumber} is now available on Jellyfin!`)
+          .setImage(`${configurationData.images.secure_base_url}original${episodeData.still_path}`)
+          .setThumbnail(`${configurationData.images.secure_base_url}original${seasonData.poster_path}`)
+          .setDescription(episodeData.overview)
+          .setColor('#0d253f')
+          .setFooter({
+            text: 'Powered by TMDB',
+            iconURL: 'https://www.themoviedb.org/assets/2/favicon-43c40950dbf3cffd5e6d682c5a8986dfdc0ac90dce9f59da9ef072aaf53aebb3.png',
+          });
+      }
       jellyfinAnnouncementsChannel.send({ embeds: [embed] });
       interaction.reply({
         content: `Announcement sent in <#${config.jellyfinAnnouncementsChannelId}>`,

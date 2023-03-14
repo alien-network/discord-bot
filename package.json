@@ -8,7 +8,7 @@
   "license": "GPL-3.0",
   "type": "module",
   "dependencies": {
-    "discord-api-types": "^0.37.35",
+    "discord-api-types": "^0.37.36",
     "discord.js": "^14.8.0"
   },
   "devDependencies": {
